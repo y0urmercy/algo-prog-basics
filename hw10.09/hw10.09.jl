@@ -161,6 +161,3 @@ function whole_place_chess!(robot::Robot)
     start_position!(robot)
     return true
 end
-r = Robot(;animate=true)
-whole_place!(r)
-readline()
