@@ -5,11 +5,20 @@ function inverse_side(side::HorizonSide)
     return HorizonSide((Int(side)+2)%4)
 end
 
-function start_position(robot::Robot)
-    steps_till_border::Integer = move_till_border!(robot, side, putmarker=false)
-    for side in [West, Nord]
-        move_steps!(robot, side, steps_till_border, putmarker=false)    
+function start_position!(robot::Robot)
+    for side in [West,Sud]
+        steps_till_border::Integer = move_till_border!(robot, side, putmarker=false)
+        move_steps!(robot, inverse_side(side), steps_till_border, putmarker=false)    
     end
+    return steps_till_border
+end
+
+function center_position!(robot::Robot)
+    for side in [West,Sud]
+        steps_till_border::Integer = move_till_border!(robot, side, putmarker=false)
+        move_steps!(robot, inverse_side(side), steps_till_border//2, putmarker=false)    
+    end
+    return steps_till_border
 end
 
 function move_till_border!(robot::Robot, side::HorizonSide; putmarker::Bool=false)::Integer
@@ -83,11 +92,13 @@ end
 
 #1
 function cross!(robot::Robot)
+    center_position!(robot)
     for side in [Nord,Ost,West,Sud]
         steps_till_border::Integer = move_till_border!(robot, side, putmarker=true)
         move_steps!(robot, inverse_side(side), steps_till_border, putmarker=false)
     end
-    start_position(robot)
+    start_position!(robot)
+    return true
 end
 
 #2
@@ -95,7 +106,8 @@ function perimetr!(robot::Robot)
     for side in [Nord,Ost,Sud,West]
         move_till_border!(robot, side, putmarker=true)
     end
-    start_position(robot)
+    start_position!(robot)
+    return true
 end
 
 #
@@ -103,7 +115,8 @@ function perimetr_chess!(robot::Robot)
     for side in [Nord,Ost,Sud,West]
         move_till_border_chess!(robot, side, putmarker=true)
     end
-    start_position(robot)
+    start_position!(robot)
+    return true
 end
 
 #3
@@ -120,7 +133,8 @@ function whole_place!(robot::Robot)
     end
     
     putmarker!(robot)
-    start_position(robot)
+    start_position!(robot)
+    return true
 end
 
 #9
@@ -144,8 +158,9 @@ function whole_place_chess!(robot::Robot)
     end
     
     putmarker!(robot)
-    start_position(robot)
+    start_position!(robot)
+    return true
 end
-
 r = Robot(;animate=true)
-whole_place_chess!(r)
+whole_place!(r)
+readline()
