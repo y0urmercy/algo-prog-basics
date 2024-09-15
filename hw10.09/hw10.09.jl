@@ -5,6 +5,12 @@ function inverse_side(side::HorizonSide)
     return HorizonSide((Int(side)+2)%4)
 end
 
+function start_position(robot::Robot)
+    steps_till_border::Integer = move_till_border!(robot, side, putmarker=false)
+    for side in [West, Nord]
+        move_steps!(robot, side, steps_till_border, putmarker=false)    
+    end
+end
 
 function move_till_border!(robot::Robot, side::HorizonSide; putmarker::Bool=false)::Integer
     steps_till_border::Integer = 0
@@ -75,25 +81,32 @@ function move_steps_chess!(robot::Robot, side::HorizonSide, steps::Integer; putm
     return true
 end
 
+#1
 function cross!(robot::Robot)
     for side in [Nord,Ost,West,Sud]
         steps_till_border::Integer = move_till_border!(robot, side, putmarker=true)
         move_steps!(robot, inverse_side(side), steps_till_border, putmarker=false)
     end
+    start_position(robot)
 end
 
+#2
 function perimetr!(robot::Robot)
     for side in [Nord,Ost,Sud,West]
         move_till_border!(robot, side, putmarker=true)
     end
+    start_position(robot)
 end
 
+#
 function perimetr_chess!(robot::Robot)
     for side in [Nord,Ost,Sud,West]
         move_till_border_chess!(robot, side, putmarker=true)
     end
+    start_position(robot)
 end
 
+#3
 function whole_place!(robot::Robot)
     side = Ost
     while !isborder(robot, Nord) || !isborder(robot, Ost) || !isborder(robot, West)
@@ -107,8 +120,10 @@ function whole_place!(robot::Robot)
     end
     
     putmarker!(robot)
+    start_position(robot)
 end
 
+#9
 function whole_place_chess!(robot::Robot)
     side = Ost
     steps = 0
@@ -129,6 +144,7 @@ function whole_place_chess!(robot::Robot)
     end
     
     putmarker!(robot)
+    start_position(robot)
 end
 
 r = Robot(;animate=true)
